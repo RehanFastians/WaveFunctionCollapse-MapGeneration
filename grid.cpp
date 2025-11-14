@@ -32,6 +32,6 @@ Grid::Grid(int numTile)
         path += '0' + i;
         path += ".png";
         for (int angle = 0; angle < 4; angle++)
-            tiles.push_back(tile(path, tempSockets[i], angle));
+            tiles.push_back(Tile(path, tempSockets[i], angle));
     }
 }
