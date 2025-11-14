@@ -1,13 +1,14 @@
 #pragma once
-#include<raylib.h>
+#include <raylib.h>
 #include <iostream>
 class tile
 {
-    Texture2D tileImage;// Image Object
+    Texture2D tileImage;    // Image Object
     std::string sockets[4]; // Directions / Sockets
 
+    void rotate(int angle); // Rotates tile to the give angle. e.g 90 degrees (vertical->horizontal)
 public:
-    tile(std::string imagePath, std::string sockets[4]);
-    void rotate(int angle);            // Rotates tile to the give angle. e.g 90 degrees (vertical->horizontal)
+    tile(std::string imagePath, std::string sockets[4], int angle);
+    ~tile();
     void draw(int X, int Y, int size); // Draw the image on (X,Y) position
 };
