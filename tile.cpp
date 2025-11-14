@@ -7,6 +7,7 @@ tile::tile(std::string imagePath, std::string sockets[4])
     this->sockets[1] = sockets[1];
     this->sockets[2] = sockets[2];
     this->sockets[3] = sockets[3];
+    tileImage = LoadTexture(imagePath.c_str());
     // Initiallize image object through image path
 }
 
