@@ -11,5 +11,4 @@ class grid
 
 public:
     grid(int numTile);
-    ~grid();
 };

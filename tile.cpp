@@ -1,7 +1,8 @@
 #include <tile.hpp>
 #include <iostream>
+#include <vector>
 
-tile::tile(std::string imagePath, std::string sockets[4], int angle)
+tile::tile(std::string imagePath, std::vector<std::string> sockets, int angle)
 {
     // Assigning Sockets
 
