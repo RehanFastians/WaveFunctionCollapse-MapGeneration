@@ -34,4 +34,10 @@ Grid::Grid(int numTile)
         for (int angle = 0; angle < 4; angle++)
             tiles.push_back(Tile(path, tempSockets[i], angle));
     }
+    for(int i=0;i<numTile;i++){
+        std :: vector<Cell> temp;
+        for(int j=0;j<numTile;j++)  temp.push_back(Cell(tiles.size()));
+        cells.push_back(temp);
+    }
+    
 }
