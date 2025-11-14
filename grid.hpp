@@ -5,7 +5,7 @@
 
 class grid
 {
-    const int gridDim = 800; // 2-Dimentional
+    const int gridDim = 800; // 2-Dimensional
     int numTile = 0;
     std::vector<tile> tiles;
 

@@ -1,8 +1,9 @@
 #pragma once
+#include<raylib.h>
 #include <iostream>
 class tile
 {
-    // Image Object
+    Texture2D tileImage;// Image Object
     std::string sockets[4]; // Directions / Sockets
 
 public:
