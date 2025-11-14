@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-tile::tile(std::string imagePath, std::vector<std::string> sockets, int angle)
+Tile::Tile(std::string imagePath, std::vector<std::string> sockets, int angle)
 {
     // Assigning Sockets
 
@@ -35,7 +35,7 @@ tile::tile(std::string imagePath, std::vector<std::string> sockets, int angle)
     UnloadImage(tempImage);
 }
 
-void tile::rotate(int angle = 0)
+void Tile::rotate(int angle = 0)
 {
 
     std::string tempSockets[4];
@@ -51,12 +51,12 @@ void tile::rotate(int angle = 0)
     }
 }
 
-void tile::draw(int X, int Y, int size)
+void Tile::draw(int X, int Y, int size)
 {
     // Raylib Work
 }
 
-tile::~tile()
+Tile::~Tile()
 {
     UnloadTexture(tileImage);
 }

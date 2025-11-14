@@ -3,12 +3,12 @@
 #include <vector>
 #include <tile.hpp>
 
-class grid
+class Grid
 {
     const int gridDim = 800; // 2-Dimensional
     int numTile = 0;
     std::vector<tile> tiles;
 
 public:
-    grid(int numTile);
+    Grid(int numTile);
 };

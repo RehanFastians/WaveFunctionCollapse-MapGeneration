@@ -3,7 +3,7 @@
 #include <grid.hpp>
 #include <vector>
 
-grid::grid(int numTile)
+Grid::Grid(int numTile)
 {
     this->numTile = numTile;
 
