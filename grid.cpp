@@ -1,4 +1,4 @@
-#include <grid.hpp>
+#include "grid.hpp"
 
 Grid::Grid(int numTile)
 {
@@ -113,14 +113,16 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs)
             continue;
 
         bool anyCollapsed = false;
-        for(int j=0;j<cells[nextY][nextX].entropy.size();j++){
-            if(tiles[cells[nextY][nextX].entropy[j]].isPossible(tiles[cells[y][x].entropy[0]], direction))
+        for (int j = 0; j < cells[nextY][nextX].entropy.size(); j++)
+        {
+            if (tiles[cells[nextY][nextX].entropy[j]].isPossible(tiles[cells[y][x].entropy[0]], direction))
                 continue;
             cells[nextY][nextX].collapse(j);
-            anyCollapsed=true;
+            anyCollapsed = true;
             j--;
         }
-        if(anyCollapsed)    bfs.push({nextY, nextX});
+        if (anyCollapsed)
+            bfs.push({nextY, nextX});
     }
 }
 
@@ -151,7 +153,5 @@ void Grid::process()
         visited[y][x] = true;
 
         processCell(y, x, bfs);
-
     }
-
 };
