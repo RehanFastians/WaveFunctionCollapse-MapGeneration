@@ -1,7 +1,6 @@
 #include <iostream>
 #include <tile.hpp>
 #include <grid.hpp>
-#include <vector>
 
 Grid::Grid(int numTile)
 {
@@ -48,6 +47,8 @@ Grid::Grid(int numTile)
 
 void Grid::draw()
 {
+    // Just draws the updated board
+
     const int tileSize = gridDim / numTile;
     for (int y = 0; y < numTile; y++)
     {
@@ -61,12 +62,19 @@ void Grid::draw()
     }
 }
 
-std::pair<int, int> Grid :: findLeastEntropy(){
+std::pair<int, int> Grid ::findLeastEntropy()
+{
+
+    // Find the first occcurence of the least entropy value cell
+
     int leastEntropy = tiles.size();
-    std :: pair<int, int> cellPosition = {0 ,0};
-    for(int y=0;y<numTile;y++){
-        for(int x=0;x<numTile;x++){
-            if(cells[y][x].entropy.size()<leastEntropy){
+    std ::pair<int, int> cellPosition = {0, 0};
+    for (int y = 0; y < numTile; y++)
+    {
+        for (int x = 0; x < numTile; x++)
+        {
+            if (cells[y][x].entropy.size() < leastEntropy)
+            {
                 leastEntropy = cells[y][x].entropy.size();
                 cellPosition = {y, x};
             }
@@ -75,11 +83,77 @@ std::pair<int, int> Grid :: findLeastEntropy(){
     return cellPosition;
 }
 
-bool Grid::isCompeleteCollapsed(){
-    for(int y = 0; y<numTile;y++){
-        for(int x = 0 ;x<numTile;x++){
-            if(cells[y][x].entropy.size()!=1)   return false;
+bool Grid::isCompeleteCollapsed()
+{
+
+    // This function checks if the map is compeletely collapse or not
+
+    for (int y = 0; y < numTile; y++)
+    {
+        for (int x = 0; x < numTile; x++)
+        {
+            if (cells[y][x].entropy.size() != 1)
+                return false;
         }
     }
     return true;
 }
+
+void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs)
+{
+
+    // These directions idx are in congruence with the directions index in tiles checking function
+
+    int diry[] = {-1, 0, 1, 0};
+    int dirx[] = {0, 1, 0, -1};
+
+    for (int direction = 0; direction < 4; direction++)
+    {
+        int nextX = x + dirx[direction];
+        int nextY = y + diry[direction];
+        if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
+            continue;
+
+        bool anyCollapsed = false;
+        for(int j=0;j<cells[nextY][nextX].entropy.size();j++){
+            if(tiles[cells[nextY][nextX].entropy[j]].isPossible(tiles[cells[y][x].entropy[0]], direction))
+                continue;
+            cells[nextY][nextX].collapse(j);
+            anyCollapsed=true;
+            j--;
+        }
+        if(anyCollapsed)    bfs.push({nextY, nextX});
+    }
+}
+
+void Grid::process()
+{
+
+    // queue to store the next cell whose entropy is to collapse
+
+    std::queue<std::pair<int, int>> bfs;
+
+    // Data structure to store info of the visited cells to improve time complexity
+
+    std::vector<std::vector<bool>> visited(numTile, std::vector<bool>(numTile, false));
+
+    // Finding least Entropy and will collapse it
+    std ::pair<int, int> startCell = findLeastEntropy();
+
+    // Randomly collapsing the cell
+
+    cells[startCell.first][startCell.second].randomCollapse();
+
+    bfs.push(startCell);
+
+    while (!bfs.empty())
+    {
+        auto [y, x] = bfs.front();
+        bfs.pop();
+        visited[y][x] = true;
+
+        processCell(y, x, bfs);
+
+    }
+    
+};
