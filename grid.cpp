@@ -29,7 +29,7 @@ Grid::Grid(int numTile)
     tempSockets[12] = {"BBB", "BCB", "BBB", "BCB"};
 
     // Setting tiles
-
+    tiles.reserve(13 * 4);
     for (int i = 0; i < 13; i++)
     {
         std::string path = "Images/";
@@ -207,9 +207,6 @@ void Grid::restart()
 
 void Grid::generateMap()
 {
-    // try
-    // {
-
     while (!WindowShouldClose())
     {
         BeginDrawing();
@@ -229,17 +226,43 @@ void Grid::generateMap()
 
         EndDrawing();
     }
-    // }
-    // catch (...)
-    // {
-    //     while (!WindowShouldClose())
-    //     {
-    //         BeginDrawing();
-    //         // ClearBackground(RAYWHITE);
+}
 
-    //         DrawText("Contradiction hogyi!", 200, 500, 30, RAYWHITE);
+void Grid::debugDraw()
+{
+    int cnt = 0;
+    int n = tiles.size();
+    for (int i = 0; i < numTile; i++)
+    {
+        for (int j = 0; j < numTile; j++)
+        {
+            cells[i][j].entropy = {cnt % n};
+            cnt++;
+        }
+    }
+}
 
-    //         EndDrawing();
-    //     }
-    // }
+void Grid::debug()
+{
+    debugDraw();
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+
+        ClearBackground(BLACK);
+        draw();
+        DrawText(std::to_string(tiles.size()).c_str(), 400, 400, 100, WHITE);
+        // if (!isCompeleteCollapsed())
+        //     process();
+        // try
+        // {
+        //     draw();
+        // }
+        // catch (...)
+        // {
+        //     restart();
+        // }
+
+        EndDrawing();
+    }
 }
