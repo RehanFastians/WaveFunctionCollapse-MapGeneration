@@ -1,7 +1,11 @@
 #include "grid.hpp"
+#include <string>
 
 Grid::Grid(int numTile)
 {
+    //  Initializing window for showing generated map
+    InitWindow((float)gridDim, (float)gridDim, "Wave-Function-Collapse");
+
     this->numTile = numTile;
 
     // Setting sockets manually
@@ -26,10 +30,10 @@ Grid::Grid(int numTile)
     for (int i = 0; i < 13; i++)
     {
         std::string path = "Images/";
-        path += '0' + i;
+        path += std::to_string(i);
         path += ".png";
         for (int angle = 0; angle < 4; angle++)
-            tiles.push_back(Tile(path, tempSockets[i], angle));
+            tiles.emplace_back(path, tempSockets[i], angle);
     }
 
     // Intitalizing default entropy to the cells
@@ -71,7 +75,7 @@ std::pair<int, int> Grid ::findLeastEntropy()
     {
         for (int x = 0; x < numTile; x++)
         {
-            if (cells[y][x].entropy.size() < leastEntropy)
+            if (cells[y][x].entropy.size() < leastEntropy && cells[y][x].entropy.size() != 1)
             {
                 leastEntropy = cells[y][x].entropy.size();
                 cellPosition = {y, x};
@@ -155,3 +159,28 @@ void Grid::process()
         processCell(y, x, bfs);
     }
 };
+
+void Grid::generateMap()
+{
+    try
+    {
+
+        while (!WindowShouldClose())
+        {
+            BeginDrawing();
+
+            ClearBackground(BLACK);
+
+            if (!isCompeleteCollapsed())
+                process();
+
+            draw();
+
+            EndDrawing();
+        }
+    }
+    catch (...)
+    {
+        CloseWindow();
+    }
+}

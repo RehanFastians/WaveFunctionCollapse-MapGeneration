@@ -19,4 +19,5 @@ public:
     bool isCompeleteCollapsed();            // To check if the map has been compeleted
     void process();
     void processCell(int y, int x, std::queue<std::pair<int, int>> &bfs);
+    void generateMap();
 };

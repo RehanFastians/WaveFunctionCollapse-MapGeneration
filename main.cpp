@@ -3,12 +3,8 @@
 
 int main()
 {
-    InitWindow(800, 800, "Sample window");
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(BLACK);
-        EndDrawing();
-    }
+    Grid map(40);
+
+    map.generateMap();
     return 0;
 }

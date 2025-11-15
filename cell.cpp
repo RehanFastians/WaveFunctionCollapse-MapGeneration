@@ -1,5 +1,6 @@
 #include "cell.hpp"
-#include<cstdlib>
+#include <cstdlib>
+#include <ctime>
 
 Cell::Cell(int entropyValue = 0)
 {
@@ -14,12 +15,12 @@ void Cell::collapse(int index)
     entropy.erase(entropy.begin() + index);
 }
 
-void Cell::randomCollapse(){
+void Cell::randomCollapse()
+{
 
     // This function will randomly select an element and collapse all the others
-
-    int randomPick = rand()%entropy.size();
+    srand(time(0));
+    int randomPick = rand() % entropy.size();
 
     entropy = {entropy[randomPick]};
-
 }
