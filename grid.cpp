@@ -60,3 +60,26 @@ void Grid::draw()
         }
     }
 }
+
+std::pair<int, int> Grid :: findLeastEntropy(){
+    int leastEntropy = tiles.size();
+    std :: pair<int, int> cellPosition = {0 ,0};
+    for(int y=0;y<numTile;y++){
+        for(int x=0;x<numTile;x++){
+            if(cells[y][x].entropy.size()<leastEntropy){
+                leastEntropy = cells[y][x].entropy.size();
+                cellPosition = {y, x};
+            }
+        }
+    }
+    return cellPosition;
+}
+
+bool Grid::isCompeleteCollapsed(){
+    for(int y = 0; y<numTile;y++){
+        for(int x = 0 ;x<numTile;x++){
+            if(cells[y][x].entropy.size()!=1)   return false;
+        }
+    }
+    return true;
+}

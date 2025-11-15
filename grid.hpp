@@ -11,6 +11,8 @@ class Grid
     std::vector<Tile> tiles;
     std::vector<std::vector<Cell>> cells;
 public:
-    Grid(int numTile);
-    void draw();
-};
+    Grid(int numTile);  // Contructor to initialize entropy
+    void draw();  // Draw the board
+    std::pair<int, int> findLeastEntropy(); // Finding the least entropy cell 
+    bool isCompeleteCollapsed(); // To check if the map has been compeleted
+};  
