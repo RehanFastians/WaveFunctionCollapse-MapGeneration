@@ -35,12 +35,28 @@ Grid::Grid(int numTile)
             tiles.push_back(Tile(path, tempSockets[i], angle));
     }
 
-    // Intitalizing default entropy to the cells 
+    // Intitalizing default entropy to the cells
 
-    for(int i=0;i<numTile;i++){
-        std :: vector<Cell> temp;
-        for(int j=0;j<numTile;j++)  temp.push_back(Cell(tiles.size()));
+    for (int i = 0; i < numTile; i++)
+    {
+        std ::vector<Cell> temp;
+        for (int j = 0; j < numTile; j++)
+            temp.push_back(Cell(tiles.size()));
         cells.push_back(temp);
     }
+}
 
+void Grid::draw()
+{
+    const int tileSize = gridDim / numTile;
+    for (int y = 0; y < numTile; y++)
+    {
+        for (int x = 0; x < numTile; x++)
+        {
+            if (cells[y][x].entropy.size() == 0)
+                throw("Contradiction encountered in Wave Function Collapse");
+            if (cells[y][x].entropy.size() == 1)
+                tiles[cells[y][x].entropy[0]].draw(y, x, tileSize);
+        }
+    }
 }

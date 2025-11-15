@@ -51,9 +51,15 @@ void Tile::rotate(int angle = 0)
     }
 }
 
-void Tile::draw(int X, int Y, int size)
+void Tile::draw(int y, int x, int tileSize)
 {
-    // Raylib Work
+    DrawTexturePro(
+        tileImage,
+        Rectangle{0, 0, (float)tileImage.width, (float)tileImage.height},                          // full texture
+        Rectangle{(float)(y * tileSize), (float)(x * tileSize), (float)tileSize, (float)tileSize}, // draw tileSize x tileSize size at (y, x)
+        Vector2{0, 0},                                                                             // origin (no rotation)
+        0.0f,                                                                                      // rotation angle
+        WHITE);
 }
 
 Tile::~Tile()

@@ -12,4 +12,5 @@ class Grid
     std::vector<std::vector<Cell>> cells;
 public:
     Grid(int numTile);
+    void draw();
 };

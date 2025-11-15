@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include <iostream>
 #include<vector>
+class Grid;
 class Tile
 {
     Texture2D tileImage;    // Image Object
@@ -11,5 +12,6 @@ class Tile
 public:
     Tile(std::string imagePath, std::vector<std::string> sockets, int angle);
     ~Tile();
-    void draw(int X, int Y, int size); // Draw the image on (X,Y) position
+    void draw(int y, int x, int tileSize); // Draw the image on (X,Y) position
+    friend class Grid;
 };
