@@ -1,5 +1,4 @@
 #include <cell.hpp>
-#include <vector>
 #include<cstdlib>
 
 Cell::Cell(int entropyValue = 0)

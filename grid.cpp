@@ -1,5 +1,3 @@
-#include <iostream>
-#include <tile.hpp>
 #include <grid.hpp>
 
 Grid::Grid(int numTile)
@@ -155,5 +153,5 @@ void Grid::process()
         processCell(y, x, bfs);
 
     }
-    
+
 };

@@ -1,13 +1,13 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#include<queue>
+#include <queue>
 #include <tile.hpp>
 #include <cell.hpp>
 
 class Grid
 {
-    const int gridDim = 800; // 2-Dimensional
+    const int gridDim = 1000; // 2-Dimensional
     int numTile = 0;
     std::vector<Tile> tiles;
     std::vector<std::vector<Cell>> cells;

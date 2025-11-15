@@ -1,6 +1,5 @@
 #include <tile.hpp>
 #include <iostream>
-#include <vector>
 
 Tile::Tile(std::string imagePath, std::vector<std::string> sockets, int angle)
 {
