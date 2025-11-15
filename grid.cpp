@@ -115,17 +115,27 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs)
         int nextY = y + diry[direction];
         if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
             continue;
-
-        bool anyCollapsed = false;
+        bool toPush = false;
         for (int j = 0; j < cells[nextY][nextX].entropy.size(); j++)
         {
-            if (tiles[cells[nextY][nextX].entropy[j]].isPossible(tiles[cells[y][x].entropy[0]], direction))
-                continue;
-            cells[nextY][nextX].collapse(j);
-            anyCollapsed = true;
-            j--;
+            bool anyCollapsed = true;
+            for (int i = 0; i < cells[y][x].entropy.size(); i++)
+            {
+                if (tiles[cells[nextY][nextX].entropy[j]].isPossible(tiles[cells[y][x].entropy[i]], direction))
+                {
+                    anyCollapsed = false;
+                    break;
+                }
+                // anyCollapsed = true;
+            }
+            if (anyCollapsed)
+            {
+                toPush = true;
+                cells[nextY][nextX].collapse(j);
+                j--;
+            }
         }
-        if (anyCollapsed)
+        if (toPush)
             bfs.push({nextY, nextX});
     }
 }
