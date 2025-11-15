@@ -20,4 +20,5 @@ public:
     void process();
     void processCell(int y, int x, std::queue<std::pair<int, int>> &bfs);
     void generateMap();
+    void restart();
 };

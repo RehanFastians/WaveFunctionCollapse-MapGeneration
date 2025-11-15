@@ -1,6 +1,6 @@
 #include "grid.hpp"
 #include <string>
-#include<ctime>
+#include <ctime>
 
 Grid::Grid(int numTile)
 {
@@ -73,7 +73,7 @@ std::pair<int, int> Grid ::findLeastEntropy()
     // Find the first occcurence of the least entropy value cell
 
     int leastEntropy = tiles.size();
-    std ::pair<int, int> cellPosition = {0, 0};
+    std::vector<std ::pair<int, int>> cellPosition;
     for (int y = 0; y < numTile; y++)
     {
         for (int x = 0; x < numTile; x++)
@@ -81,11 +81,23 @@ std::pair<int, int> Grid ::findLeastEntropy()
             if (cells[y][x].entropy.size() < leastEntropy && cells[y][x].entropy.size() != 1)
             {
                 leastEntropy = cells[y][x].entropy.size();
-                cellPosition = {y, x};
+                // cellPosition = {y, x};
             }
         }
     }
-    return cellPosition;
+    for (int y = 0; y < numTile; y++)
+    {
+        for (int x = 0; x < numTile; x++)
+        {
+            if (cells[y][x].entropy.size() == leastEntropy && cells[y][x].entropy.size() != 1)
+            {
+                // leastEntropy = cells[y][x].entropy.size();
+                cellPosition.push_back({y, x});
+            }
+        }
+    }
+
+    return cellPosition[rand() % cellPosition.size()];
 }
 
 bool Grid::isCompeleteCollapsed()
@@ -119,12 +131,12 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs)
         if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
             continue;
         bool toPush = false;
-        for (int j = 0; j < cells[nextY][nextX].entropy.size(); j++)
+        for (int j = 0; j < cells[y][x].entropy.size(); j++)
         {
             bool anyCollapsed = true;
-            for (int i = 0; i < cells[y][x].entropy.size(); i++)
+            for (int i = 0; i < cells[nextY][nextX].entropy.size(); i++)
             {
-                if (tiles[cells[nextY][nextX].entropy[j]].isPossible(tiles[cells[y][x].entropy[i]], direction))
+                if (tiles[cells[y][x].entropy[j]].isPossible(tiles[cells[nextY][nextX].entropy[i]], direction))
                 {
                     anyCollapsed = false;
                     break;
@@ -134,7 +146,7 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs)
             if (anyCollapsed)
             {
                 toPush = true;
-                cells[nextY][nextX].collapse(j);
+                cells[y][x].collapse(j);
                 j--;
             }
         }
@@ -150,10 +162,6 @@ void Grid::process()
 
     std::queue<std::pair<int, int>> bfs;
 
-    // Data structure to store info of the visited cells to improve time complexity
-
-    std::vector<std::vector<bool>> visited(numTile, std::vector<bool>(numTile, false));
-
     // Finding least Entropy and will collapse it
     std ::pair<int, int> startCell = findLeastEntropy();
 
@@ -161,39 +169,77 @@ void Grid::process()
 
     cells[startCell.first][startCell.second].randomCollapse();
 
-    bfs.push(startCell);
+    int diry[] = {-1, 0, 1, 0};
+    int dirx[] = {0, 1, 0, -1};
+
+    for (int direction = 0; direction < 4; direction++)
+    {
+        int nextX = startCell.second + dirx[direction];
+        int nextY = startCell.first + diry[direction];
+        if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
+            continue;
+        bfs.push({nextY, nextX});
+    }
 
     while (!bfs.empty())
     {
         auto [y, x] = bfs.front();
         bfs.pop();
-        visited[y][x] = true;
 
         processCell(y, x, bfs);
     }
 };
 
+void Grid::restart()
+{
+    cells = {};
+
+    // Intitalizing default entropy to the cells
+
+    for (int i = 0; i < numTile; i++)
+    {
+        std ::vector<Cell> temp;
+        for (int j = 0; j < numTile; j++)
+            temp.push_back(Cell(tiles.size()));
+        cells.push_back(temp);
+    }
+}
+
 void Grid::generateMap()
 {
-    try
-    {
+    // try
+    // {
 
-        while (!WindowShouldClose())
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+
+        ClearBackground(BLACK);
+
+        if (!isCompeleteCollapsed())
+            process();
+        try
         {
-            BeginDrawing();
-
-            ClearBackground(BLACK);
-
-            if (!isCompeleteCollapsed())
-                process();
-
             draw();
-
-            EndDrawing();
         }
+        catch (...)
+        {
+            restart();
+        }
+
+        EndDrawing();
     }
-    catch (...)
-    {
-        CloseWindow();
-    }
+    // }
+    // catch (...)
+    // {
+    //     while (!WindowShouldClose())
+    //     {
+    //         BeginDrawing();
+    //         // ClearBackground(RAYWHITE);
+
+    //         DrawText("Contradiction hogyi!", 200, 500, 30, RAYWHITE);
+
+    //         EndDrawing();
+    //     }
+    // }
 }
