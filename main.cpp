@@ -3,7 +3,7 @@
 
 int main()
 {
-    Grid map(40);
+    Grid map(20);
 
     map.generateMap();
     return 0;

@@ -1,5 +1,6 @@
 #include "tile.hpp"
 #include <iostream>
+#include <algorithm>
 
 Tile::Tile(std::string imagePath, std::vector<std::string> sockets, int angle)
 {
@@ -61,12 +62,18 @@ void Tile::draw(int y, int x, int tileSize)
         WHITE);
 }
 
+std::string reverseString(std::string s)
+{
+    std::reverse(s.begin(), s.end());
+    return s;
+}
+
 bool Tile::isPossible(Tile &other, int direction)
 {
 
     // Direction 0: other tile is upward, 1: other tile is on the righ and so on....
 
-    return this->sockets[direction] == other.sockets[(direction + 2) % 4];
+    return this->sockets[direction] == reverseString(other.sockets[(direction + 2) % 4]);
 }
 
 Tile::~Tile()

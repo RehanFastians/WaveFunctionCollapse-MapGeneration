@@ -1,8 +1,11 @@
 #include "grid.hpp"
 #include <string>
+#include<ctime>
 
 Grid::Grid(int numTile)
 {
+    srand(time(0));
+
     //  Initializing window for showing generated map
     InitWindow((float)gridDim, (float)gridDim, "Wave-Function-Collapse");
 
