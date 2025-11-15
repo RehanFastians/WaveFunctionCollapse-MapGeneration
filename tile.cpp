@@ -6,10 +6,10 @@ Tile::Tile(std::string imagePath, std::vector<std::string> sockets, int angle)
 {
     // Assigning Sockets
 
-    this->sockets[0] = sockets[0];
-    this->sockets[1] = sockets[1];
-    this->sockets[2] = sockets[2];
-    this->sockets[3] = sockets[3];
+    this->sockets[0] = sockets[0]; // Upper Part
+    this->sockets[1] = sockets[1]; // Right Part
+    this->sockets[2] = sockets[2]; // Down Part
+    this->sockets[3] = sockets[3]; // Left Part
 
     // Rotate image object
     // 0 -> Nothing Changes
@@ -60,6 +60,14 @@ void Tile::draw(int y, int x, int tileSize)
         Vector2{0, 0},                                                                             // origin (no rotation)
         0.0f,                                                                                      // rotation angle
         WHITE);
+}
+
+bool Tile::isPossible(Tile &other, int direction){
+
+    // Direction 0: other tile is upward, 1: other tile is on the righ and so on....
+
+    return this->sockets[direction] == other.sockets[(direction + 2)%4];
+
 }
 
 Tile::~Tile()
