@@ -5,9 +5,12 @@
 
 Grid::Grid(int numTile)
 {
+    // Seeding rand() function
+
     srand(time(0));
 
     //  Initializing window for showing generated map
+
     InitWindow((float)gridDim, (float)gridDim, "Wave-Function-Collapse");
 
     this->numTile = numTile;
@@ -30,6 +33,7 @@ Grid::Grid(int numTile)
     tempSockets[12] = {"BBB", "BCB", "BBB", "BCB"};
 
     // Setting tiles
+
     tiles.reserve(13 * 4);
     for (int i = 0; i < 13; i++)
     {
@@ -61,9 +65,9 @@ void Grid::draw()
         for (int x = 0; x < numTile; x++)
         {
             if (cells[y][x].entropy.size() == 0)
-                throw("Contradiction encountered in Wave Function Collapse");
+                throw("Contradiction encountered in Wave Function Collapse"); // Handle contradiction
             if (cells[y][x].entropy.size() == 1)
-                tiles[cells[y][x].entropy[0]].draw(y, x, tileSize);
+                tiles[cells[y][x].entropy[0]].draw(y, x, tileSize); // Draw the tile
         }
     }
 }
@@ -71,10 +75,9 @@ void Grid::draw()
 std::pair<int, int> Grid ::findLeastEntropy()
 {
 
-    // Find the random occcurence of the least entropy value cell
-
     int leastEntropy = tiles.size();
-    std::vector<std ::pair<int, int>> cellPosition;
+
+    // Find least Entropy
     for (int y = 0; y < numTile; y++)
     {
         for (int x = 0; x < numTile; x++)
@@ -85,6 +88,11 @@ std::pair<int, int> Grid ::findLeastEntropy()
             }
         }
     }
+
+    // Find the random occcurence of the least entropy value cell
+
+    std::vector<std ::pair<int, int>> cellPosition;
+
     for (int x = 0; x < numTile; x++)
     {
         for (int y = 0; y < numTile; y++)
@@ -95,7 +103,6 @@ std::pair<int, int> Grid ::findLeastEntropy()
             }
         }
     }
-    // return cellPosition[0];
     return cellPosition[rand() % cellPosition.size()];
 }
 
@@ -124,36 +131,42 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::
 
     for (int j = 0; j < cells[y][x].entropy.size(); j++)
     {
-        bool doesExist = true;
+        bool shouldExist = true; // This tells if this entropy value should exist by checking adjacent values
+
         for (int direction = 0; direction < 4; direction++)
         {
+            // Adjacent cells position calculation
+
             int nextX = x + dirx[direction];
             int nextY = y + diry[direction];
-            if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
+
+            if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile) // Validating position
                 continue;
-            bool check = false;
-            bool toPush = false;
+
+            bool doesExist = false; // It tells if a valid neighbour exist
             for (int i = 0; i < cells[nextY][nextX].entropy.size(); i++)
             {
                 if (tiles[cells[y][x].entropy[j]].isPossible(tiles[cells[nextY][nextX].entropy[i]], direction))
                 {
-                    check = true;
+                    doesExist = true;
                     break;
                 }
             }
-            if (!check)
+            if (!doesExist)
             {
-                toPush=true;
-                doesExist = false;
+                shouldExist = false;
                 break;
             }
+
             if (visit[nextY][nextX])
-                continue;
+                continue; // If the cell is visited dont visit it again obviously
             visit[nextY][nextX] = true;
-            // if(toPush)
-            bfs.push({nextY, nextX});
+            bfs.push({nextY, nextX}); // Push this for the upcoming traversal
         }
-        if (!doesExist)
+
+        // Collapse if no valid neighbour was found
+
+        if (!shouldExist)
         {
             cells[y][x].collapse(j);
             j--;
@@ -164,22 +177,26 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::
 void Grid::process()
 {
 
-    // queue to store the next cell whose entropy is to collapse
-
-    std::queue<std::pair<int, int>> bfs;
-
     // Finding least Entropy and will collapse it
+
     std ::pair<int, int> startCell = findLeastEntropy();
 
     // Randomly collapsing the cell
 
     cells[startCell.first][startCell.second].randomCollapse();
 
+    // Direction
+
     int diry[] = {-1, 0, 1, 0};
     int dirx[] = {0, 1, 0, -1};
 
+    // queue to store the next cell whose entropy is to collapse and visit to keep track of visited to avoid repitition
+
+    std::queue<std::pair<int, int>> bfs;
     std::vector<std::vector<bool>> visit(numTile, std::vector<bool>(numTile, false));
-    
+
+    // Push all adjacent cells of  the currently collapsed cell
+
     for (int direction = 0; direction < 4; direction++)
     {
         int nextX = startCell.second + dirx[direction];
@@ -190,6 +207,7 @@ void Grid::process()
         visit[nextY][nextX] = true;
     }
 
+    // Process all cells (whole grid)
 
     while (!bfs.empty())
     {
@@ -224,14 +242,14 @@ void Grid::generateMap()
         ClearBackground(BLACK);
 
         if (!isCompeleteCollapsed())
-            process();
+            process(); // If compeletely collapsed then process algo
         try
         {
             draw();
         }
         catch (...)
         {
-            restart();
+            restart(); // If contradiction occured restart the algorithm
         }
 
         EndDrawing();

@@ -6,8 +6,8 @@ Tile::Tile(std::string imagePath, std::vector<std::string> sockets, int angle)
 {
     // Assigning Sockets 0->Upper and proceed clockwise
 
-    for(int i=0;i<4;i++)
-    this->sockets[i] = sockets[i]; 
+    for (int i = 0; i < 4; i++)
+        this->sockets[i] = sockets[i];
 
     // Rotate image object
     // 0 -> Nothing Changes
