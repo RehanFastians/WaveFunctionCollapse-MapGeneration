@@ -132,6 +132,7 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::
             if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
                 continue;
             bool check = false;
+            bool toPush = false;
             for (int i = 0; i < cells[nextY][nextX].entropy.size(); i++)
             {
                 if (tiles[cells[y][x].entropy[j]].isPossible(tiles[cells[nextY][nextX].entropy[i]], direction))
@@ -142,12 +143,14 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::
             }
             if (!check)
             {
+                toPush=true;
                 doesExist = false;
                 break;
             }
             if (visit[nextY][nextX])
                 continue;
             visit[nextY][nextX] = true;
+            if(toPush)
             bfs.push({nextY, nextX});
         }
         if (!doesExist)
@@ -176,6 +179,7 @@ void Grid::process()
     int dirx[] = {0, 1, 0, -1};
 
     std::vector<std::vector<bool>> visit(numTile, std::vector<bool>(numTile, false));
+    
     for (int direction = 0; direction < 4; direction++)
     {
         int nextX = startCell.second + dirx[direction];
