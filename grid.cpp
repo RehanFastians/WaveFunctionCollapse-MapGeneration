@@ -150,7 +150,7 @@ void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::
             if (visit[nextY][nextX])
                 continue;
             visit[nextY][nextX] = true;
-            if(toPush)
+            // if(toPush)
             bfs.push({nextY, nextX});
         }
         if (!doesExist)
