@@ -1,5 +1,6 @@
 #include "grid.hpp"
 #include <string>
+#include <cstdlib>
 #include <ctime>
 
 Grid::Grid(int numTile)
@@ -70,7 +71,7 @@ void Grid::draw()
 std::pair<int, int> Grid ::findLeastEntropy()
 {
 
-    // Find the first occcurence of the least entropy value cell
+    // Find the random occcurence of the least entropy value cell
 
     int leastEntropy = tiles.size();
     std::vector<std ::pair<int, int>> cellPosition;
@@ -81,22 +82,20 @@ std::pair<int, int> Grid ::findLeastEntropy()
             if (cells[y][x].entropy.size() < leastEntropy && cells[y][x].entropy.size() != 1)
             {
                 leastEntropy = cells[y][x].entropy.size();
-                // cellPosition = {y, x};
             }
         }
     }
-    for (int y = 0; y < numTile; y++)
+    for (int x = 0; x < numTile; x++)
     {
-        for (int x = 0; x < numTile; x++)
+        for (int y = 0; y < numTile; y++)
         {
-            if (cells[y][x].entropy.size() == leastEntropy && cells[y][x].entropy.size() != 1)
+            if (cells[y][x].entropy.size() == leastEntropy)
             {
-                // leastEntropy = cells[y][x].entropy.size();
                 cellPosition.push_back({y, x});
             }
         }
     }
-
+    // return cellPosition[0];
     return cellPosition[rand() % cellPosition.size()];
 }
 
@@ -116,42 +115,46 @@ bool Grid::isCompeleteCollapsed()
     return true;
 }
 
-void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs)
+void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::vector<std::vector<bool>> &visit)
 {
-
     // These directions idx are in congruence with the directions index in tiles checking function
 
     int diry[] = {-1, 0, 1, 0};
     int dirx[] = {0, 1, 0, -1};
 
-    for (int direction = 0; direction < 4; direction++)
+    for (int j = 0; j < cells[y][x].entropy.size(); j++)
     {
-        int nextX = x + dirx[direction];
-        int nextY = y + diry[direction];
-        if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
-            continue;
-        bool toPush = false;
-        for (int j = 0; j < cells[y][x].entropy.size(); j++)
+        bool doesExist = true;
+        for (int direction = 0; direction < 4; direction++)
         {
-            bool anyCollapsed = true;
+            int nextX = x + dirx[direction];
+            int nextY = y + diry[direction];
+            if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
+                continue;
+            bool check = false;
             for (int i = 0; i < cells[nextY][nextX].entropy.size(); i++)
             {
                 if (tiles[cells[y][x].entropy[j]].isPossible(tiles[cells[nextY][nextX].entropy[i]], direction))
                 {
-                    anyCollapsed = false;
+                    check = true;
                     break;
                 }
-                // anyCollapsed = true;
             }
-            if (anyCollapsed)
+            if (!check)
             {
-                toPush = true;
-                cells[y][x].collapse(j);
-                j--;
+                doesExist = false;
+                break;
             }
-        }
-        if (toPush)
+            if (visit[nextY][nextX])
+                continue;
+            visit[nextY][nextX] = true;
             bfs.push({nextY, nextX});
+        }
+        if (!doesExist)
+        {
+            cells[y][x].collapse(j);
+            j--;
+        }
     }
 }
 
@@ -172,6 +175,7 @@ void Grid::process()
     int diry[] = {-1, 0, 1, 0};
     int dirx[] = {0, 1, 0, -1};
 
+    std::vector<std::vector<bool>> visit(numTile, std::vector<bool>(numTile, false));
     for (int direction = 0; direction < 4; direction++)
     {
         int nextX = startCell.second + dirx[direction];
@@ -179,14 +183,16 @@ void Grid::process()
         if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile)
             continue;
         bfs.push({nextY, nextX});
+        visit[nextY][nextX] = true;
     }
+
 
     while (!bfs.empty())
     {
         auto [y, x] = bfs.front();
         bfs.pop();
 
-        processCell(y, x, bfs);
+        processCell(y, x, bfs, visit);
     }
 };
 
@@ -223,45 +229,6 @@ void Grid::generateMap()
         {
             restart();
         }
-
-        EndDrawing();
-    }
-}
-
-void Grid::debugDraw()
-{
-    int cnt = 0;
-    int n = tiles.size();
-    for (int i = 0; i < numTile; i++)
-    {
-        for (int j = 0; j < numTile; j++)
-        {
-            cells[i][j].entropy = {cnt % n};
-            cnt++;
-        }
-    }
-}
-
-void Grid::debug()
-{
-    debugDraw();
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-
-        ClearBackground(BLACK);
-        draw();
-        DrawText(std::to_string(tiles.size()).c_str(), 400, 400, 100, WHITE);
-        // if (!isCompeleteCollapsed())
-        //     process();
-        // try
-        // {
-        //     draw();
-        // }
-        // catch (...)
-        // {
-        //     restart();
-        // }
 
         EndDrawing();
     }

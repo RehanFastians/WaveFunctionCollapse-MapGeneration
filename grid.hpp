@@ -18,9 +18,7 @@ public:
     std::pair<int, int> findLeastEntropy(); // Finding the least entropy cell
     bool isCompeleteCollapsed();            // To check if the map has been compeleted
     void process();
-    void processCell(int y, int x, std::queue<std::pair<int, int>> &bfs);
+    void processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::vector<std::vector<bool>> &visit);
     void generateMap();
     void restart();
-    void debug();
-    void debugDraw();
 };

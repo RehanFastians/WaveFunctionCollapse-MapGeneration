@@ -4,12 +4,10 @@
 
 Tile::Tile(std::string imagePath, std::vector<std::string> sockets, int angle)
 {
-    // Assigning Sockets
+    // Assigning Sockets 0->Upper and proceed clockwise
 
-    this->sockets[0] = sockets[0]; // Upper Part
-    this->sockets[1] = sockets[1]; // Right Part
-    this->sockets[2] = sockets[2]; // Down Part
-    this->sockets[3] = sockets[3]; // Left Part
+    for(int i=0;i<4;i++)
+    this->sockets[i] = sockets[i]; 
 
     // Rotate image object
     // 0 -> Nothing Changes
@@ -56,7 +54,7 @@ void Tile::draw(int y, int x, int tileSize)
     DrawTexturePro(
         tileImage,
         Rectangle{0, 0, (float)tileImage.width, (float)tileImage.height},                          // full texture
-        Rectangle{(float)(y * tileSize), (float)(x * tileSize), (float)tileSize, (float)tileSize}, // draw tileSize x tileSize size at (y, x)
+        Rectangle{(float)(x * tileSize), (float)(y * tileSize), (float)tileSize, (float)tileSize}, // draw tileSize x tileSize size at (y, x)
         Vector2{0, 0},                                                                             // origin (no rotation)
         0.0f,                                                                                      // rotation angle
         WHITE);

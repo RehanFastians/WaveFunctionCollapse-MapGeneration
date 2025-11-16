@@ -4,8 +4,7 @@
 int main()
 {
     Grid map(20);
-
+    SetTargetFPS(120);
     map.generateMap();
-    // map.debug();
     return 0;
 }
