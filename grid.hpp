@@ -11,6 +11,7 @@ class Grid
     int numTile = 0;
     std::vector<Tile> tiles;
     std::vector<std::vector<Cell>> cells;
+    int collapsedCount =0;
 
 public:
     Grid(int numTile);                      // Contructor to initialize entropy

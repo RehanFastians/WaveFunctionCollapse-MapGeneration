@@ -58,7 +58,7 @@ Grid::Grid(int numTile)
 void Grid::draw()
 {
     // Just draws the updated board
-
+    collapsedCount = 0;
     const int tileSize = gridDim / numTile;
     for (int y = 0; y < numTile; y++)
     {
@@ -67,7 +67,10 @@ void Grid::draw()
             if (cells[y][x].entropy.size() == 0)
                 throw("Contradiction encountered in Wave Function Collapse"); // Handle contradiction
             if (cells[y][x].entropy.size() == 1)
+            {
                 tiles[cells[y][x].entropy[0]].draw(y, x, tileSize); // Draw the tile
+                collapsedCount++;
+            }
         }
     }
 }
@@ -110,16 +113,16 @@ bool Grid::isCompeleteCollapsed()
 {
 
     // This function checks if the map is compeletely collapse or not
-
-    for (int y = 0; y < numTile; y++)
-    {
-        for (int x = 0; x < numTile; x++)
-        {
-            if (cells[y][x].entropy.size() != 1)
-                return false;
-        }
-    }
-    return true;
+    return numTile * numTile == collapsedCount;
+    // for (int y = 0; y < numTile; y++)
+    // {
+    //     for (int x = 0; x < numTile; x++)
+    //     {
+    //         if (cells[y][x].entropy.size() != 1)
+    //             return false;
+    //     }
+    // }
+    // return true;
 }
 
 void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::vector<std::vector<bool>> &visit)
@@ -241,11 +244,11 @@ void Grid::generateMap()
 
         ClearBackground(BLACK);
 
+        draw();
         if (!isCompeleteCollapsed())
             process(); // If compeletely collapsed then process algo
         try
         {
-            draw();
         }
         catch (...)
         {
