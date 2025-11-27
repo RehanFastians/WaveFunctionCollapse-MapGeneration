@@ -16,7 +16,7 @@ class Grid
     std::priority_queue<std::pair<int,int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> entropyMinHeap;
     int collapsedCount =0;
 
-    void loadSockets();
+    void loadSockets(std::string type);
     void draw();                            // Draw the board
     std::pair<int, int> findLeastEntropy(); // Finding the least entropy cell
     bool isCompeleteCollapsed();            // To check if the map has been compeleted

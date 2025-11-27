@@ -22,7 +22,7 @@ Grid::Grid(int numTile)
 
     this->numTile = numTile;
 
-    loadSockets();
+    loadSockets("circuit");
 
     // Intitalizing default entropy to the cells
 
@@ -36,7 +36,7 @@ Grid::Grid(int numTile)
     entropyMinHeap.push({tiles.size(), 0});
 }
 
-void Grid ::loadSockets()
+void Grid ::loadSockets(std :: string type)
 {
 
     // Fetching sockets from sockets.json
@@ -47,7 +47,7 @@ void Grid ::loadSockets()
 
     std::vector<std::vector<std::string>> tempSockets;
 
-    for (auto &arr : data["tiles"])
+    for (auto &arr : data[type])
     {
         std::vector<std::string> sockets;
 
@@ -59,10 +59,12 @@ void Grid ::loadSockets()
 
     // Setting tiles
 
-    tiles.reserve(13 * 4);
-    for (int i = 0; i < 13; i++)
+    tiles.reserve(tempSockets.size() * 4);
+    for (int i = 0; i < tempSockets.size(); i++)
     {
         std::string path = "Images/";
+        path+=type;
+        path+='/';
         path += std::to_string(i);
         path += ".png";
         for (int angle = 0; angle < 4; angle++)
