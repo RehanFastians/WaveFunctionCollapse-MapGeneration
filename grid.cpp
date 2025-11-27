@@ -4,6 +4,10 @@
 #include <ctime>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <queue>
+#include <functional>
+#include <utility>
+#include <vector>
 using json = nlohmann::json;
 
 Grid::Grid(int numTile)
@@ -29,10 +33,12 @@ Grid::Grid(int numTile)
             temp.push_back(Cell(tiles.size()));
         cells.push_back(temp);
     }
+    entropyMinHeap.push({tiles.size(), 0});
 }
 
-void Grid :: loadSockets(){
-    
+void Grid ::loadSockets()
+{
+
     // Fetching sockets from sockets.json
 
     std::ifstream in("sockets.json");
@@ -62,7 +68,6 @@ void Grid :: loadSockets(){
         for (int angle = 0; angle < 4; angle++)
             tiles.emplace_back(path, tempSockets[i], angle);
     }
-
 }
 
 void Grid::draw()
@@ -237,6 +242,8 @@ void Grid::restart()
             temp.push_back(Cell(tiles.size()));
         cells.push_back(temp);
     }
+    entropyMinHeap = std::priority_queue<std::pair<int,int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>>();
+    entropyMinHeap.push({tiles.size(), 0});
 }
 
 void Grid::generateMap()
@@ -248,8 +255,9 @@ void Grid::generateMap()
         ClearBackground(BLACK);
 
         draw();
-        if (!isCompeleteCollapsed())
-            process(); // If compeletely collapsed then process algo
+        processtemp();
+        // if (!isCompeleteCollapsed())
+        // process(); // If compeletely collapsed then process algo
         try
         {
         }
@@ -259,5 +267,50 @@ void Grid::generateMap()
         }
 
         EndDrawing();
+    }
+}
+
+void Grid::processtemp()
+{
+    auto [entropy, index] = entropyMinHeap.top();
+    entropyMinHeap.pop();
+    int y = index / numTile, x = index % numTile;
+    if (entropy > cells[y][x].entropy.size())
+        return;
+    cells[y][x].randomCollapse();
+
+    processCellTemp(x, y);
+}
+
+void Grid ::processCellTemp(int x, int y)
+{
+
+    // These directions idx are in congruence with the directions index in tiles checking function
+
+    int diry[] = {-1, 0, 1, 0};
+    int dirx[] = {0, 1, 0, -1};
+
+    int currentEntropy = cells[y][x].entropy[0];
+
+    for (int direction = 0; direction < 4; direction++)
+    {
+        int nextX = x + dirx[direction];
+        int nextY = y + diry[direction];
+
+        if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile) // Validating position
+            continue;
+        for (int i = 0; i < cells[nextY][nextX].entropy.size(); i++)
+        {
+            if (!tiles[currentEntropy].isPossible(tiles[cells[nextY][nextX].entropy[i]], direction))
+            {
+                cells[nextY][nextX].collapse(i);
+                if(cells[nextY][nextX].entropy.size()<1){
+                    restart();
+                    return;
+                }
+                entropyMinHeap.push({cells[nextY][nextX].entropy.size(), nextY * numTile + nextX});
+                i--;
+            }
+        }
     }
 }

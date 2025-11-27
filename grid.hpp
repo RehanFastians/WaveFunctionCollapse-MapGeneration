@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
-#include <vector>
-#include <queue>
+#include<queue>
+#include<functional>
+#include<utility>
+#include<vector>
 #include "tile.hpp"
 #include "cell.hpp"
 
@@ -11,6 +13,7 @@ class Grid
     int numTile = 0;
     std::vector<Tile> tiles;
     std::vector<std::vector<Cell>> cells;
+    std::priority_queue<std::pair<int,int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> entropyMinHeap;
     int collapsedCount =0;
 
     void loadSockets();
@@ -20,6 +23,10 @@ class Grid
     void process();                         // Processes Entropy
     void processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::vector<std::vector<bool>> &visit); // Update each cell and manage traversal
     void restart();     // Restart generation after contradiction
+
+    void processtemp();
+    void processCellTemp(int x, int y);
+
 public:
     Grid(int numTile);                      // Contructor to initialize entropy
     void generateMap(); // Generate Map
