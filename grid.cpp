@@ -2,6 +2,9 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 Grid::Grid(int numTile)
 {
@@ -15,22 +18,22 @@ Grid::Grid(int numTile)
 
     this->numTile = numTile;
 
-    // Setting sockets manually
+    // Fetching sockets from sockets.json
 
-    std::vector<std::vector<std::string>> tempSockets(13, std::vector<std::string>(4));
-    tempSockets[0] = {"AAA", "AAA", "AAA", "AAA"};
-    tempSockets[1] = {"BBB", "BBB", "BBB", "BBB"};
-    tempSockets[2] = {"BBB", "BCB", "BBB", "BBB"};
-    tempSockets[3] = {"BBB", "BDB", "BBB", "BDB"};
-    tempSockets[4] = {"ABB", "BCB", "BBA", "AAA"};
-    tempSockets[5] = {"ABB", "BBB", "BBB", "BBA"};
-    tempSockets[6] = {"BBB", "BCB", "BBB", "BCB"};
-    tempSockets[7] = {"BDB", "BCB", "BDB", "BCB"};
-    tempSockets[8] = {"BDB", "BBB", "BCB", "BBB"};
-    tempSockets[9] = {"BCB", "BCB", "BBB", "BCB"};
-    tempSockets[10] = {"BCB", "BCB", "BCB", "BCB"};
-    tempSockets[11] = {"BCB", "BCB", "BBB", "BBB"};
-    tempSockets[12] = {"BBB", "BCB", "BBB", "BCB"};
+    std::ifstream in("sockets.json");
+    json data;
+    in >> data;
+
+    std::vector<std::vector<std::string>> tempSockets;
+
+    for (auto& arr : data["tiles"]) {
+        std::vector<std::string> sockets;
+
+        for (auto& s : arr)
+            sockets.push_back(s.get<std::string>());
+
+        tempSockets.push_back(sockets);
+    }
 
     // Setting tiles
 
@@ -114,15 +117,6 @@ bool Grid::isCompeleteCollapsed()
 
     // This function checks if the map is compeletely collapse or not
     return numTile * numTile == collapsedCount;
-    // for (int y = 0; y < numTile; y++)
-    // {
-    //     for (int x = 0; x < numTile; x++)
-    //     {
-    //         if (cells[y][x].entropy.size() != 1)
-    //             return false;
-    //     }
-    // }
-    // return true;
 }
 
 void Grid::processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::vector<std::vector<bool>> &visit)
