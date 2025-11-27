@@ -257,16 +257,16 @@ void Grid::generateMap()
         ClearBackground(BLACK);
 
         draw();
-        processtemp();
-        // if (!isCompeleteCollapsed())
-        // process(); // If compeletely collapsed then process algo
-        try
-        {
-        }
-        catch (...)
-        {
-            restart(); // If contradiction occured restart the algorithm
-        }
+        // processtemp();
+        if (!isCompeleteCollapsed())
+        process(); // If compeletely collapsed then process algo
+        // try
+        // {
+        // }
+        // catch (...)
+        // {
+        //     restart(); // If contradiction occured restart the algorithm
+        // }
 
         EndDrawing();
     }
