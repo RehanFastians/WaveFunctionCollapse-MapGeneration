@@ -13,13 +13,14 @@ class Grid
     std::vector<std::vector<Cell>> cells;
     int collapsedCount =0;
 
-public:
-    Grid(int numTile);                      // Contructor to initialize entropy
+    void loadSockets();
     void draw();                            // Draw the board
     std::pair<int, int> findLeastEntropy(); // Finding the least entropy cell
     bool isCompeleteCollapsed();            // To check if the map has been compeleted
     void process();                         // Processes Entropy
     void processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::vector<std::vector<bool>> &visit); // Update each cell and manage traversal
-    void generateMap(); // Generate Map
     void restart();     // Restart generation after contradiction
+public:
+    Grid(int numTile);                      // Contructor to initialize entropy
+    void generateMap(); // Generate Map
 };

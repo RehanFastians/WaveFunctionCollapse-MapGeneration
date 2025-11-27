@@ -18,6 +18,21 @@ Grid::Grid(int numTile)
 
     this->numTile = numTile;
 
+    loadSockets();
+
+    // Intitalizing default entropy to the cells
+
+    for (int i = 0; i < numTile; i++)
+    {
+        std ::vector<Cell> temp;
+        for (int j = 0; j < numTile; j++)
+            temp.push_back(Cell(tiles.size()));
+        cells.push_back(temp);
+    }
+}
+
+void Grid :: loadSockets(){
+    
     // Fetching sockets from sockets.json
 
     std::ifstream in("sockets.json");
@@ -26,10 +41,11 @@ Grid::Grid(int numTile)
 
     std::vector<std::vector<std::string>> tempSockets;
 
-    for (auto& arr : data["tiles"]) {
+    for (auto &arr : data["tiles"])
+    {
         std::vector<std::string> sockets;
 
-        for (auto& s : arr)
+        for (auto &s : arr)
             sockets.push_back(s.get<std::string>());
 
         tempSockets.push_back(sockets);
@@ -47,28 +63,23 @@ Grid::Grid(int numTile)
             tiles.emplace_back(path, tempSockets[i], angle);
     }
 
-    // Intitalizing default entropy to the cells
-
-    for (int i = 0; i < numTile; i++)
-    {
-        std ::vector<Cell> temp;
-        for (int j = 0; j < numTile; j++)
-            temp.push_back(Cell(tiles.size()));
-        cells.push_back(temp);
-    }
 }
 
 void Grid::draw()
 {
     // Just draws the updated board
+
     collapsedCount = 0;
+
     const int tileSize = gridDim / numTile;
+
     for (int y = 0; y < numTile; y++)
     {
         for (int x = 0; x < numTile; x++)
         {
             if (cells[y][x].entropy.size() == 0)
                 throw("Contradiction encountered in Wave Function Collapse"); // Handle contradiction
+
             if (cells[y][x].entropy.size() == 1)
             {
                 tiles[cells[y][x].entropy[0]].draw(y, x, tileSize); // Draw the tile
@@ -89,9 +100,7 @@ std::pair<int, int> Grid ::findLeastEntropy()
         for (int x = 0; x < numTile; x++)
         {
             if (cells[y][x].entropy.size() < leastEntropy && cells[y][x].entropy.size() != 1)
-            {
                 leastEntropy = cells[y][x].entropy.size();
-            }
         }
     }
 
