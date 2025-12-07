@@ -78,5 +78,37 @@
             "BBB",
             "BCB"
         ]
+    ], 
+    "garden":[
+        [
+            "BB", "BG", "GB", "BB"
+        ],
+        [
+            "BB", "BG", "GG", "GB"
+        ],
+        [
+            "GG", "GG", "GG", "GG"
+        ],
+        [
+            "GB", "BG", "GG", "GG"
+        ],
+        [
+            "GG", "GG", "GG", "GG"
+        ],
+        [
+            "GG", "GG", "GG", "GG"
+        ],
+        [
+            "GG", "GG", "GG", "GG"
+        ],
+        [
+            "GG", "GG", "GG", "GG"
+        ],
+        [
+            "BB","BB","BB","BB"
+        ],
+        [
+            "BB","BB","BB","BB"
+        ]
     ]
 }

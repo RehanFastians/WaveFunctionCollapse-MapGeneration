@@ -27,7 +27,8 @@ Grid::Grid(int numTile)
 
     this->numTile = numTile;
 
-    loadSockets("circuit");
+    // loadSockets("circuit");
+    loadSockets("garden");
 
     // Intitalizing default entropy to the cells
 
@@ -77,9 +78,11 @@ void Grid ::loadSockets(std ::string type)
     }
 }
 
+
 // -----------------------------------------
 //           HELPER FUNCTIONS
 // -----------------------------------------
+
 
 void Grid::restart()
 {
