@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include<queue>
 #include"minHeap.hpp"
 #include<functional>
 #include<utility>
@@ -21,14 +20,11 @@ class Grid
 
     void loadSockets(std::string type);
     void draw();                            // Draw the board
-    std::pair<int, int> findLeastEntropy(); // Finding the least entropy cell
     bool isCompeleteCollapsed();            // To check if the map has been compeleted
-    void process();                         // Processes Entropy
-    void processCell(int y, int x, std::queue<std::pair<int, int>> &bfs, std::vector<std::vector<bool>> &visit); // Update each cell and manage traversal
     void restart();     // Restart generation after contradiction
-
-    void processtemp();
-    void processCellTemp(int x, int y);
+    void propagate(int startX, int startY);
+    void process();
+    void processCell(int x, int y);
     void showHomeScreen();
 public:
     Grid(int numTile);                      // Contructor to initialize entropy
