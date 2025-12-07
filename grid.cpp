@@ -156,7 +156,6 @@ void Grid::process()
 
     // Process that cell
     propagate(x, y);
-    // processCell(x, y);
 }
 
 void Grid::propagate(int startX, int startY)
@@ -229,42 +228,6 @@ void Grid::propagate(int startX, int startY)
 
                 // Update heap
                 entropyMinHeap.push({(int)cells[ny][nx].entropy.size(), ny * numTile + nx});
-            }
-        }
-    }
-}
-
-void Grid ::processCell(int x, int y)
-{
-
-    // These directions indices are in congruence with the directions index in tiles checking function
-
-    int diry[] = {-1, 0, 1, 0};
-    int dirx[] = {0, 1, 0, -1};
-
-    int currentEntropy = cells[y][x].entropy[0];
-
-    for (int direction = 0; direction < 4; direction++)
-    {
-        int nextX = x + dirx[direction];
-        int nextY = y + diry[direction];
-
-        if (nextX < 0 || nextY < 0 || nextX >= numTile || nextY >= numTile) // Validating position
-            continue;
-        for (int i = 0; i < cells[nextY][nextX].entropy.size(); i++)
-        {
-            if (!tiles[currentEntropy].isPossible(tiles[cells[nextY][nextX].entropy[i]], direction))
-            {
-                //  If its not compatible with any neighbour then collapse it
-
-                cells[nextY][nextX].collapse(i);
-                if (cells[nextY][nextX].entropy.size() < 1)
-                {
-                    restart(); // Restart if entropy gets reduced to 0
-                    return;
-                }
-                entropyMinHeap.push({cells[nextY][nextX].entropy.size(), nextY * numTile + nextX});
-                i--;
             }
         }
     }

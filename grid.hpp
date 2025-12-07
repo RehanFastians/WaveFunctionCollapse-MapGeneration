@@ -24,7 +24,6 @@ class Grid
     void restart();     // Restart generation after contradiction
     void propagate(int startX, int startY);
     void process();
-    void processCell(int x, int y);
     void showHomeScreen();
 public:
     Grid(int numTile);                      // Contructor to initialize entropy
