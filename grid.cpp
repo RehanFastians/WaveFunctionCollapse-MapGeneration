@@ -46,7 +46,7 @@ void Grid ::loadSockets(std ::string type)
 {
 
     // Fetching sockets from sockets.json
-
+    tiles = std::vector<Tile>();
     std::ifstream in("sockets.json");
     json data;
     in >> data;

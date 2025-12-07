@@ -13,6 +13,7 @@ class Grid
     int numTile = 0;
     bool isPaused = false;
     bool isHomeScreen = true;
+    string type;
     std::vector<Tile> tiles;
     std::vector<std::vector<Cell>> cells;
     MinHeap<std::pair<int,int>> entropyMinHeap;
