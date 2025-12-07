@@ -73,8 +73,10 @@ void Grid ::loadSockets(std ::string type)
         path += '/';
         path += std::to_string(i);
         path += ".png";
-        for (int angle = 0; angle < 4; angle++)
+        for (int angle = 0; angle < 4; angle++){
             tiles.emplace_back(path, tempSockets[i], angle);
+            if(type == "garden" && i>2) break;
+        }
     }
 }
 
