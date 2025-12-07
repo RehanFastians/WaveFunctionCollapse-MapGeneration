@@ -11,6 +11,8 @@ class Grid
 {
     const int gridDim = 800; // 2-Dimensional
     int numTile = 0;
+    bool isPaused = false;
+    bool isHomeScreen = true;
     std::vector<Tile> tiles;
     std::vector<std::vector<Cell>> cells;
     std::priority_queue<std::pair<int,int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> entropyMinHeap;
@@ -26,7 +28,7 @@ class Grid
 
     void processtemp();
     void processCellTemp(int x, int y);
-
+    void showHomeScreen();
 public:
     Grid(int numTile);                      // Contructor to initialize entropy
     void generateMap(); // Generate Map

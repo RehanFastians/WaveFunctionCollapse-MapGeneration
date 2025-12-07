@@ -54,7 +54,7 @@ void Tile::draw(int y, int x, int tileSize)
     DrawTexturePro(
         tileImage,
         Rectangle{0, 0, (float)tileImage.width, (float)tileImage.height},                          // full texture
-        Rectangle{(float)(x * tileSize), (float)(y * tileSize), (float)tileSize, (float)tileSize}, // draw tileSize x tileSize size at (y, x)
+        Rectangle{(float)(x * tileSize + 20), (float)(y * tileSize + 10), (float)tileSize, (float)tileSize}, // draw tileSize x tileSize size at (y, x)
         Vector2{0, 0},                                                                             // origin (no rotation)
         0.0f,                                                                                      // rotation angle
         WHITE);
