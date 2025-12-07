@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include<queue>
+#include"minHeap.hpp"
 #include<functional>
 #include<utility>
 #include<vector>
@@ -15,7 +16,7 @@ class Grid
     bool isHomeScreen = true;
     std::vector<Tile> tiles;
     std::vector<std::vector<Cell>> cells;
-    std::priority_queue<std::pair<int,int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> entropyMinHeap;
+    MinHeap<std::pair<int,int>> entropyMinHeap;
     int collapsedCount =0;
 
     void loadSockets(std::string type);

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <queue>
+#include "minHeap.hpp"
 #include <functional>
 #include <utility>
 #include <vector>
@@ -18,7 +19,7 @@ Grid::Grid(int numTile)
 
     //  Initializing window for showing generated map
 
-    InitWindow((float)(gridDim + 40), (float)(gridDim + 80), "Wave-Function-Collapse");
+    InitWindow((float)(gridDim + 40), (float)(gridDim + 90), "Wave-Function-Collapse");
 
     this->numTile = numTile;
 
@@ -89,18 +90,32 @@ void Grid::draw()
         DrawLine(0, i, gridDim + 80, i, Fade(GRAY, 0.3f));
     }
 
+    const int tileSize = gridDim / numTile;
     // ---------------------------------------------------------
     // NEW: Main Grid Border
     // ---------------------------------------------------------
     // Draws a professional-looking border around the tile area
-    Rectangle gridBorderRect = {-4, -4, (float)gridDim + 8, (float)gridDim + 8};
-    DrawRectangleRoundedLines(gridBorderRect, 0.01f, 10, themeDarkBlue);
+    Rectangle gridBorderRect = {20, 10, (float)gridDim, (float)gridDim};
+    // DrawRectangleRoundedLines(gridBorderRect, 0.01f, 10, themeDarkBlue);
+
+    // We loop 4 times to create a 4px thick line
+    for (int i = 0; i < 4; i++)
+    {
+        Rectangle currentRect = {
+            gridBorderRect.x - i,           // Move left
+            gridBorderRect.y - i,           // Move up
+            gridBorderRect.width + (i * 2), // Grow width
+            gridBorderRect.height + (i * 2) // Grow height
+        };
+
+        // In old versions, this function only takes 4 arguments
+        DrawRectangleRoundedLines(currentRect, 0.01f, 10, themeDarkBlue);
+    }
 
     // ---------------------------------------------------------
     // 1. Existing Grid Drawing Logic (UNMODIFIED)
     // ---------------------------------------------------------
     collapsedCount = 0;
-    const int tileSize = gridDim / numTile;
 
     for (int y = 0; y < numTile; y++)
     {
@@ -126,7 +141,7 @@ void Grid::draw()
     float bottomMargin = 10;
 
     float centerX = (float)(gridDim + 80) / 2;
-    float btnY = (float)(gridDim + 80) - btnHeight - bottomMargin;
+    float btnY = (float)(gridDim + 85) - btnHeight - bottomMargin;
 
     float totalWidth = (btnWidth * 3) + (padding * 2);
     float startX = centerX - (totalWidth / 2);
@@ -149,7 +164,6 @@ void Grid::draw()
     int segments = 10;
     int fontSize = 20;
 
-
     // A. Themed UI Panel Background
     // Replaced the dark glass with a clean white panel with a dark blue border
     Rectangle panelRect = {startX - 15, btnY - 10, totalWidth + 30, btnHeight + 20};
@@ -170,7 +184,8 @@ void Grid::draw()
     // Text
     DrawText(pauseLabel, (int)(pauseRec.x + (btnWidth - MeasureText(pauseLabel, fontSize)) / 2), (int)(pauseRec.y + (btnHeight - fontSize) / 2), fontSize, currentPauseText);
 
-    if (pauseHover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+    if (pauseHover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    {
         isPaused = !isPaused;
         return;
     }
@@ -208,7 +223,8 @@ void Grid::draw()
     // Text
     DrawText("HOME", (int)(homeRec.x + (btnWidth - MeasureText("HOME", fontSize)) / 2), (int)(homeRec.y + (btnHeight - fontSize) / 2), fontSize, currentHomeText);
 
-    if (homeHover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+    if (homeHover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    {
         isHomeScreen = true;
         restart();
         isPaused = false;
@@ -363,7 +379,7 @@ void Grid::restart()
             temp.push_back(Cell(tiles.size()));
         cells.push_back(temp);
     }
-    entropyMinHeap = std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>>();
+    entropyMinHeap = MinHeap<std::pair<int, int>>();
     entropyMinHeap.push({tiles.size(), 0});
 }
 
@@ -372,7 +388,6 @@ void Grid::showHomeScreen()
     // ----------------------------
     // 1. Setup Dimensions & Layout (UNMODIFIED POSITIONS)
     // ----------------------------
-
 
     // Draw a subtle "Graph Paper" background pattern
     // This fills the empty space and fits the "Grid" theme perfectly
@@ -416,9 +431,9 @@ void Grid::showHomeScreen()
     int titleX = (gridDim - titleWidth) / 2;
     int titleY = (gridDim - 250) / 2;
 
-    // UPGRADE: Soft Drop Shadow (looks cleaner than black)
+    // Soft Drop Shadow
     DrawText(titleText, titleX + 6, titleY + 6, titleFontSize, Fade(BLACK, 0.2f));
-    // UPGRADE: Main Text in "Midnight Blue" instead of Maroon
+    // Main Text in Midnight Blue
     DrawText(titleText, titleX, titleY, titleFontSize, (Color){20, 30, 60, 255});
 
     // B. Draw Start Button
