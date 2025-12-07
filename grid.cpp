@@ -27,19 +27,7 @@ Grid::Grid(int numTile)
 
     this->numTile = numTile;
 
-    // loadSockets("circuit");
-    loadSockets("garden");
-
-    // Intitalizing default entropy to the cells
-
-    for (int i = 0; i < numTile; i++)
-    {
-        std ::vector<Cell> temp;
-        for (int j = 0; j < numTile; j++)
-            temp.push_back(Cell(tiles.size()));
-        cells.push_back(temp);
-    }
-    entropyMinHeap.push({tiles.size(), 0});
+   
 }
 
 void Grid ::loadSockets(std ::string type)
@@ -244,108 +232,182 @@ void Grid::propagate(int startX, int startY)
 
 void Grid::showHomeScreen()
 {
+    // State to track selection (0: Circuit, 1: Garden, -1: None)
+    // We use static so it remembers the choice until the program closes
+    static int selectedOption = -1; 
+
+    // ---------------------------------------------------------
     // 1. Setup Dimensions & Layout
+    // ---------------------------------------------------------
 
-    // Drawing a subtle "Graph Paper" background pattern
-
+    // Background Pattern
     for (int i = 0; i < gridDim + 80; i += 40)
     {
         DrawLine(i, 0, i, gridDim + 80, Fade(GRAY, 0.4f));
         DrawLine(0, i, gridDim + 80, i, Fade(GRAY, 0.4f));
     }
 
-    // Button settings
-
+    // Button Dimensions
     int btnWidth = 200;
     int btnHeight = 60;
+    
+    // Start Button Position (Unchanged)
     Rectangle btnBounds = {
         (float)((gridDim - btnWidth) / 2),
         (float)((gridDim + 50) / 2),
         (float)btnWidth,
-        (float)btnHeight};
+        (float)btnHeight
+    };
 
-    // 2. Handle Input
+    // ---------------------------------------------------------
+    // 2. NEW: Radio Button Logic (Circuit vs Garden)
+    // ---------------------------------------------------------
+    
+    // Colors
+    Color themeBlue = {20, 30, 60, 255};
+    Color themeHover = {40, 60, 140, 255};
 
+    // Calculate positions for the options (Below the Start Button)
+    float optionY = btnBounds.y + btnHeight + 30; // 30px below start button
+    float optionWidth = 100;
+    float optionHeight = 30;
+    float gap = 20;
+
+    // Center the two options
+    float totalOptionWidth = (optionWidth * 2) + gap;
+    float startOptionX = ((float)gridDim - totalOptionWidth) / 2;
+
+    Rectangle circuitRect = { startOptionX, optionY, optionWidth, optionHeight };
+    Rectangle gardenRect = { startOptionX + optionWidth + gap, optionY, optionWidth, optionHeight };
+
+    // Handle Input for Options
     Vector2 mousePoint = GetMousePosition();
-    bool isHovering = CheckCollisionPointRec(mousePoint, btnBounds);
+    bool hoverCircuit = CheckCollisionPointRec(mousePoint, circuitRect);
+    bool hoverGarden = CheckCollisionPointRec(mousePoint, gardenRect);
 
-    if (isHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if (hoverCircuit && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) selectedOption = 0;
+    if (hoverGarden && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) selectedOption = 1;
+
+    // ---------------------------------------------------------
+    // 3. Handle Start Button Input (With Logic Check)
+    // ---------------------------------------------------------
+    
+    bool isStartHovering = CheckCollisionPointRec(mousePoint, btnBounds);
+    bool canStart = (selectedOption != -1); // Only allow start if an option is picked
+
+    if (canStart && isStartHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
+        // TODO: Load the correct tileset here based on selectedOption!
+        if (selectedOption == 0) loadSockets("circuit");
+        if (selectedOption == 1) loadSockets("garden");
+
+        restart();
+
         isHomeScreen = false;
         return;
     }
 
-    // 3. Drawing
+    // ---------------------------------------------------------
+    // 4. Drawing
+    // ---------------------------------------------------------
 
-    // A. Draw TITLE "WFC"
-
+    // A. Draw TITLE "WFC" (Unchanged)
     const char *titleText = "WFC";
     int titleFontSize = 120;
     int titleWidth = MeasureText(titleText, titleFontSize);
-
-    // Positions
-
     int titleX = (gridDim - titleWidth) / 2;
     int titleY = (gridDim - 250) / 2;
 
-    // Soft Drop Shadow
-
     DrawText(titleText, titleX + 6, titleY + 6, titleFontSize, Fade(BLACK, 0.2f));
+    DrawText(titleText, titleX, titleY, titleFontSize, themeBlue);
 
-    // Main Text in Midnight Blue
-
-    DrawText(titleText, titleX, titleY, titleFontSize, (Color){20, 30, 60, 255});
-
-    // B. Draw Start Button
-
+    // B. Draw "START" Button
     float roundness = 0.5f;
     int segments = 10;
 
-    // Draw Button Shadow
-
+    // Shadow
     Rectangle shadowBounds = btnBounds;
-    shadowBounds.y += 4; // Slight offset down
+    shadowBounds.y += 4;
     DrawRectangleRounded(shadowBounds, roundness, segments, Fade(BLACK, 0.15f));
 
+    // Determine Start Button Colors based on state
+    Color bodyColor, borderColor, textColor;
+
+    if (!canStart) {
+        // Disabled State (Grayed out)
+        bodyColor = Fade(LIGHTGRAY, 0.5f);
+        borderColor = GRAY;
+        textColor = GRAY;
+    } 
+    else if (isStartHovering) {
+        // Hover State
+        bodyColor = themeHover;
+        borderColor = themeBlue;
+        textColor = WHITE;
+    } 
+    else {
+        // Normal Enabled State
+        bodyColor = WHITE;
+        borderColor = themeHover;
+        textColor = themeHover;
+    }
+
     // Draw Button Body
+    DrawRectangleRounded(btnBounds, roundness, segments, bodyColor);
+    DrawRectangleRoundedLines(btnBounds, roundness, segments, borderColor); // Added thickness fix
 
-    if (isHovering)
-    {
-        // Hover State: Filled Dark Blue with White Text
-        DrawRectangleRounded(btnBounds, roundness, segments, (Color){40, 60, 140, 255});
-        DrawRectangleRoundedLines(btnBounds, roundness, segments, (Color){20, 30, 60, 255});
-    }
-    else
-    {
-        // Normal State: White with Dark Blue Border
-        DrawRectangleRounded(btnBounds, roundness, segments, WHITE);
-        DrawRectangleRoundedLines(btnBounds, roundness, segments, (Color){40, 60, 140, 255});
-    }
-
-    // C. Draw "START" Text inside Button
-
+    // Draw "START" Text
     const char *btnText = "START";
     int btnFontSize = 30;
     int btnTextWidth = MeasureText(btnText, btnFontSize);
-
     int textX = (int)btnBounds.x + (btnWidth - btnTextWidth) / 2;
     int textY = (int)btnBounds.y + (btnHeight - btnFontSize) / 2;
-
-    // Text color flips based on hover
-
-    Color textColor = isHovering ? WHITE : (Color){40, 60, 140, 255};
     DrawText(btnText, textX, textY, btnFontSize, textColor);
 
-    // D. Subtitle
 
+    // C. Draw Radio Buttons (Circuit / Garden)
+    // Helper lambda to draw option
+    auto DrawOption = [&](Rectangle rect, const char* label, bool isSelected, bool isHover) {
+        // Draw little checkbox circle
+        float circleRadius = 8;
+        float circleX = rect.x + 15;
+        float circleY = rect.y + rect.height/2;
+        
+        // Draw Label
+        Color labelColor = (isSelected || isHover) ? themeBlue : GRAY;
+        DrawText(label, (int)(rect.x + 30), (int)(rect.y + 8), 20, labelColor);
+
+        // Draw Circle Outline
+        DrawCircleLines((int)circleX, (int)circleY, circleRadius, themeBlue);
+        
+        // Draw Filled Circle if selected
+        if (isSelected) {
+            DrawCircle((int)circleX, (int)circleY, circleRadius - 3, themeBlue);
+        }
+        
+        // Draw hover border around the whole area
+        if (isHover) {
+             DrawRectangleRoundedLines(rect, 0.3f, 4, Fade(themeBlue, 0.3f));
+        }
+    };
+
+    DrawOption(circuitRect, "Circuit", (selectedOption == 0), hoverCircuit);
+    DrawOption(gardenRect, "Garden", (selectedOption == 1), hoverGarden);
+
+    // D. Subtitle (Unchanged)
     const char *subText = "Wave Function Collapse";
     int subSize = 20;
     int subWidth = MeasureText(subText, subSize);
-
-    // Letter spacing effect (drawing text slightly darker)
-
     DrawText(subText, (gridDim - subWidth) / 2, (gridDim - 40) / 2, subSize, (Color){80, 80, 100, 255});
+    
+    // Optional: Tooltip if they hover start but haven't selected
+    if (isStartHovering && !canStart) {
+        const char* warning = "Select a map type first!";
+        int wWidth = MeasureText(warning, 10);
+        DrawText(warning, (int)(btnBounds.x + (btnWidth - wWidth)/2), (int)(btnBounds.y - 20), 10, RED);
+    }
 }
+
 
 void Grid::draw()
 {
