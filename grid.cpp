@@ -159,7 +159,6 @@ void Grid::process()
     // processCell(x, y);
 }
 
-
 void Grid::propagate(int startX, int startY)
 {
     Stack<std::pair<int, int>> stack;
@@ -171,12 +170,11 @@ void Grid::propagate(int startX, int startY)
         stack.pop();
 
         // Check all 4 neighbors
-        int diry[] = {-1, 0, 1, 0}; // Up, Right, Down, Left
+        int diry[] = {-1, 0, 1, 0};
         int dirx[] = {0, 1, 0, -1};
 
-        // Note: Make sure you handle opposite directions correctly 
         // If checking UP (dir 0), the neighbor looks DOWN (dir 2)
-        int oppositeDir[] = {2, 3, 0, 1}; 
+        int oppositeDir[] = {2, 3, 0, 1};
 
         for (int d = 0; d < 4; d++)
         {
@@ -184,14 +182,15 @@ void Grid::propagate(int startX, int startY)
             int ny = cy + diry[d];
 
             // Bounds check
-            if (nx < 0 || ny < 0 || nx >= numTile || ny >= numTile) continue;
+            if (nx < 0 || ny < 0 || nx >= numTile || ny >= numTile)
+                continue;
 
             // Check if we need to remove options from the Neighbor (nx, ny)
             // based on the valid options remaining in Current (cx, cy)
-            
+
             bool neighborChanged = false;
-            std::vector<int>& nOptions = cells[ny][nx].entropy;
-            
+            std::vector<int> &nOptions = cells[ny][nx].entropy;
+
             // Iterate backwards so we can erase efficiently
             for (int i = nOptions.size() - 1; i >= 0; i--)
             {
@@ -202,7 +201,8 @@ void Grid::propagate(int startX, int startY)
                 for (int myTileID : cells[cy][cx].entropy)
                 {
                     // Does MyTile allow NeighborTile in direction 'd'?
-                    if (tiles[myTileID].isPossible(tiles[neighborTileID], d)) {
+                    if (tiles[myTileID].isPossible(tiles[neighborTileID], d))
+                    {
                         isCompatibleWithAny = true;
                         break;
                     }
@@ -216,17 +216,18 @@ void Grid::propagate(int startX, int startY)
                 }
             }
 
-            // CRITICAL: If the neighbor changed, we must check *its* neighbors too!
+            // If the neighbor changed, we must check its neighbors too!
             if (neighborChanged)
             {
-                if (cells[ny][nx].entropy.empty()) {
-                    throw std::runtime_error("Contradiction"); // Caught by your main loop
+                if (cells[ny][nx].entropy.empty())
+                {
+                    throw std::runtime_error("Contradiction"); // Caught by main loop
                 }
-                
+
                 // Add to stack to propagate further
                 stack.push({nx, ny});
-                
-                // Update heap (Optional: creates duplicate entries but is safer)
+
+                // Update heap
                 entropyMinHeap.push({(int)cells[ny][nx].entropy.size(), ny * numTile + nx});
             }
         }
